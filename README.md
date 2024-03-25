@@ -163,8 +163,8 @@ CREATE TABLE IF NOT EXISTS accounts (
 
 ### Running the Program
 
-Go into the ``time-tracker`` directory and run ``npm start`` to run the client (React frontend)
+Go into the project folder and run ``npm start`` to run the client (React frontend)
 
 Then, go into the ``backend`` directory and run ``npm start`` as well to run the server (Node.js backend)
 
-***Alternatively***, you can go the ``time-tracker`` directory and run ``npm run dev`` to run both concurrently.
+***Alternatively***, you can go the project folder and run ``npm run dev`` to run both concurrently.
