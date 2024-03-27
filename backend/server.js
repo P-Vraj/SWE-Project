@@ -45,22 +45,27 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-// Can run into race conditions sometimes
+// Fixed race conditions
 async function test() {
   var u1 = new User("U1", "ADMIN");
   var u2 = new User("U2", "MANAGER");
   var u3 = new User("U3", "EMPLOYEE");
+  var p1 = new Project("P1", "Desc1");
+  var results = [];
   try {
-    await u1.addUser();
-    await u2.addUser();
-    await u3.addUser();
-    var p1 = new Project("P1", "Desc1");
-    await p1.addProject();
-    await p1.assignMember(u2);
-    await User.deleteUser(u2.user_id);
+    results.push(await u1.addUser());
+    results.push(await u2.addUser());
+    results.push(await u3.addUser());
+    results.push(await p1.addProject());
+    results.push(await p1.assignMember(u2));
+    results.push(await User.deleteUser(u2.user_id));
   } catch (err) {
     console.error(err);
   }
+  results.forEach(result => {
+    console.log("Result:");
+    console.log(result);
+  });
   // User.deleteUser(user.user_id);
 }
 

@@ -1,8 +1,6 @@
 const { v4 : uuidv4 } = require('uuid');
-const mysql = require('mysql');
-const config = require('./config');
-
 const User = require('./User');
+const ProjectRepository = require('./ProjectRepository');
 
 class Project {
   name = "";                // Project name
@@ -21,7 +19,7 @@ class Project {
    * Add the project to the database
    */
   addProject() {
-    ProjectRepository.addProject(this);
+    return ProjectRepository.addProject(this);
   }
 
   /** 
@@ -31,7 +29,7 @@ class Project {
   assignMember(member) {
     if (member.user_type === "EMPLOYEE" || member.user_type === "MANAGER") {
       this.member_ids.push(member.user_id);
-      ProjectRepository.assignMember(this, member.user_id);
+      return ProjectRepository.assignMember(this, member.user_id);
     }
   }
   /**
@@ -40,8 +38,9 @@ class Project {
   removeMember(member) {
     const index = this.member_ids.indexOf(id => id === member.user_id);
     if (index != -1) {
-      ProjectRepository.removeMember(this, member.user_id);
+      const result = ProjectRepository.removeMember(this, member.user_id);
       this.member_ids.splice(index, 1);
+      return result;
     }
   }
   /**
@@ -53,102 +52,6 @@ class Project {
       return this.time_sheet.get(member.user_id);
     }
     return [];
-  }
-}
-
-class ProjectRepository {
-  static getConnection() {
-    return mysql.createConnection(config);
-  }
-  static queryDatabase(db, command) {
-    return new Promise((resolve, reject) => {
-      db.query(command, (error, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(results);
-        }
-      });
-    });
-  }
-  static async getMembers(project) {
-    const db = this.getConnection();
-    const command = `SELECT * FROM user_project WHERE project_id = '${project.project_id}'`;
-    // db.query(command, (err, result) => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    //   console.log(result);
-    //   return result;
-    // });
-    try {
-      const result = await this.queryDatabase(db, command);
-      console.log(result);
-      return result;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  static async addProject(project) {
-    const db = this.getConnection();
-    const command = `INSERT INTO projects (project_id, name, description) 
-                     VALUES ('${project.project_id}', '${project.name}', '${project.description}')`;
-    // db.query(command, (err, result) => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    //   console.log(result);
-    //   return { success: true, message: "Project added successfully" };
-    // });
-    try {
-      const result = await this.queryDatabase(db, command);
-      console.log(result);
-      return { success: true, message: "Project added successfully" };
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  static async assignMember(project, user_id) {
-    const db = this.getConnection();
-    const command = `INSERT INTO user_project (user_id, project_id)
-                     VALUES ('${user_id}', '${project.project_id}')`;
-    // db.query(command, (err, result) => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    //   console.log(result);
-    //   return { success: true, message: "User assigned successfully" };
-    // });
-    try {
-      const result = await this.queryDatabase(db, command);
-      console.log(result);
-      return { success: true, message: "User assigned successfully" };
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  static async removeMember(project, user_id) {
-    const db = this.getConnection();
-    const command = `DELETE FROM user_project 
-                     WHERE user_id = '${user_id}' AND project_id = '${project.project_id}'`;
-    // db.query(command, (err, result) => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    //   console.log(result);
-    //   return { success: true, message: "User removed successfully" };
-    // });
-    try {
-      const result = await this.queryDatabase(db, command);
-      console.log(result);
-      return { success: true, message: "User removed successfully" };
-    } catch (err) {
-      console.error(err);
-    }
   }
 }
 

@@ -1,6 +1,5 @@
 const { v4 : uuidv4 } = require('uuid');
-const mysql = require('mysql');
-const config = require('./config');
+const UserRepository = require('./UserRepository');
 
 class User {
   name = "";                // User name
@@ -31,89 +30,14 @@ class User {
    * 
    */
   addUser() {
-    UserRepository.addUser(this);
+    return UserRepository.addUser(this);
   }
   /**
    * Deletes the user with the given user id from the database
    */
   static deleteUser(user_id) {
-    UserRepository.deleteUser(user_id);
+    return UserRepository.deleteUser(user_id);
   }
 }
-
-class UserRepository {
-  static getConnection() {
-    return mysql.createConnection(config);
-  }
-  static queryDatabase(db, command) {
-    return new Promise((resolve, reject) => {
-      db.query(command, (error, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(results);
-        }
-      });
-    });
-  }
-  static async getProjects(user) {
-    const db = this.getConnection();
-    const command = `SELECT * FROM user_project WHERE user_id = '${user.user_id}'`;
-    // db.query(command, (err, result) => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    //   console.log(result);
-    //   return result;
-    // });
-    try {
-      const result = await this.queryDatabase(db, command);
-      console.log(result);
-      return result;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  static async addUser(user) {
-    const db = this.getConnection();
-    const command = `INSERT INTO users (user_id, name, user_type) 
-                     VALUES ('${user.user_id}', '${user.name}', '${user.user_type}')`;
-    // db.query(command, (err, result) => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    //   console.log(result);
-    //   return { success: true, message: "User added successfully" };
-    // });
-    try {
-      const result = await this.queryDatabase(db, command);
-      console.log(result);
-      return { success: true, message: "User added successfully" };
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  static async deleteUser(user_id) {
-    const db = this.getConnection();
-    const command = `DELETE FROM users WHERE user_id = '${user_id}'`;
-    // db.query(command, (err, result) => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    //   console.log(result);
-    //   return { success: true, message: "User deleted successfully" };
-    // });
-    try {
-      const result = await this.queryDatabase(db, command);
-      console.log(result);
-      return { success: true, message: "User deleted successfully" };
-    } catch (err) {
-      console.error(err);
-    }
-  }
-};
 
 module.exports = User;
