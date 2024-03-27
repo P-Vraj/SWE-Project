@@ -1,107 +1,6 @@
-# Getting Started
+# Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Setup Instructions
-
-### Initial Setup
-
-Download and install Node.js and npm from [the npm Docs](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-
-Download and install MySQL onto your machine from [MySQL Download](https://dev.mysql.com/downloads/mysql/)
-
-***When creating a database, keep the username as 'root' (default behavior) and set the password to 'password'***
-
-* If the password is set to another value, you can change it to 'password' from this [How to Reset the Root Password article](https://dev.mysql.com/doc/refman/8.0/en/resetting-permissions.html)
-
-### Dependency Installation
-
-Once the project files have been downloaded, run this command ***within the project folder*** to install all dependencies:
-
-```shell
-npm install
-```
-
-### Database Setup
-
-If you have an error regarding authentication protocols, run these commands:
-
-```shell
-ALTER USER 'root@localhost' IDENTIFIED WITH mysql_native_password BY 'password';
-flush privileges;
-```
-
-Otherwise try to run these commands:
-
-```shell
-ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'password';
-flush privileges;
-```
-
-If the issue persists, visit this [StackOverflow link](https://stackoverflow.com/questions/50093144/mysql-8-0-client-does-not-support-authentication-protocol-requested-by-server)
-
-### Creating the Database Tables
-
-Below are the commands needed to create the database and tables before running the project:
-
-```shell
-mysql -u root -p
-Enter password: password
-
-CREATE DATABASE IF NOT EXISTS tracker_data;
-USE tracker_data;
-CREATE TABLE IF NOT EXISTS users (
-    user_id CHAR(36) NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    user_type ENUM('EMPLOYEE', 'MANAGER', 'ADMIN') NOT NULL
-);
-CREATE TABLE IF NOT EXISTS projects (
-    project_id CHAR(36) NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT
-);
-CREATE TABLE IF NOT EXISTS user_project (
-    user_id CHAR(36) NOT NULL,
-    project_id CHAR(36) NOT NULL,
-    PRIMARY KEY (user_id, project_id),
-    FOREIGN KEY (user_id)
-        REFERENCES users(user_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (project_id)
-        REFERENCES projects(project_id)
-        ON DELETE CASCADE
-);
-CREATE TABLE IF NOT EXISTS times (
-    event_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id CHAR(36) NOT NULL,
-    project_id CHAR(36) NOT NULL,
-    event_type ENUM('CLOCK IN', 'CLOCK OUT') NOT NULL,
-    event_time TIMESTAMP NOT NULL,
-    FOREIGN KEY (user_id)
-        REFERENCES users(user_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (project_id)
-        REFERENCES projects(project_id)
-        ON DELETE CASCADE
-);
-CREATE TABLE IF NOT EXISTS accounts (
-    username_hash BINARY(32) NOT NULL,
-    password_hash BINARY(32) NOT NULL,
-    user_id CHAR(36) NOT NULL,
-    FOREIGN KEY (user_id)
-        REFERENCES users(user_id)
-        ON DELETE CASCADE
-);
-
-```
-
-### Running the Program
-
-Go into the parent directory and run ``npm start`` to run the client (React frontend)
-
-Then, go into the ``backend`` directory and run ``npm start`` as well to run the server (Node.js backend)
-
-***Alternatively***, you can go the parent directory and run ``npm run dev`` to run both the client and the server concurrently.
 
 ## Available Scripts
 
@@ -169,3 +68,103 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Additional Instructions and Database Setup
+
+### Additional Installations
+
+Once the project files have been downloaded, try running this command ***within the project folder*** to install all dependencies:
+
+```shell
+npm install
+```
+
+If that does not work, run the following commands ***within the project folder*** for all required dependencies required:
+
+```shell
+npm install express
+npm install uuid mysql
+npm install assert buffer
+npm install crypto-browserify stream-browserify timers-browserify
+npm install webpack@latest
+npm install net tls fs vm
+npm install concurrently --save-dev
+```
+
+### Database Setup
+
+Download MySQL onto your machine from [MySQL Download](https://dev.mysql.com/downloads/mysql/)
+
+***When creating a database, keep the username as 'root' and set the password to 'password'***
+
+If you have an error regarding authentication protocols, try running these commands
+
+```shell
+ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'password';
+flush privileges;
+```
+
+If the issue persists, visit this [StackOverflow link](https://stackoverflow.com/questions/50093144/mysql-8-0-client-does-not-support-authentication-protocol-requested-by-server)
+
+### Creating the Database Tables
+
+Below are the commands needed to create the database and tables before running our project
+
+```shell
+mysql -u root -p
+Enter password: password
+
+CREATE DATABASE IF NOT EXISTS tracker_data;
+USE tracker_data;
+CREATE TABLE IF NOT EXISTS users (
+    user_id CHAR(36) NOT NULL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    user_type ENUM('EMPLOYEE', 'MANAGER', 'ADMIN') NOT NULL
+);
+CREATE TABLE IF NOT EXISTS projects (
+    project_id CHAR(36) NOT NULL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT
+);
+CREATE TABLE IF NOT EXISTS user_project (
+    user_id CHAR(36) NOT NULL,
+    project_id CHAR(36) NOT NULL,
+    PRIMARY KEY (user_id, project_id),
+    FOREIGN KEY (user_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (project_id)
+        REFERENCES projects(project_id)
+        ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS times (
+    event_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id CHAR(36) NOT NULL,
+    project_id CHAR(36) NOT NULL,
+    event_type ENUM('CLOCK IN', 'CLOCK OUT') NOT NULL,
+    event_time TIMESTAMP NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (project_id)
+        REFERENCES projects(project_id)
+        ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS accounts (
+    username_hash BINARY(32) NOT NULL,
+    password_hash BINARY(32) NOT NULL,
+    user_id CHAR(36) NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE
+);
+
+```
+
+### Running the Program
+
+Go into the project folder and run ``npm start`` to run the client (React frontend)
+
+Then, go into the ``backend`` directory and run ``npm start`` as well to run the server (Node.js backend)
+
+***Alternatively***, you can go the project folder and run ``npm run dev`` to run both concurrently.
